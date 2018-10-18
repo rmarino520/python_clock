@@ -208,9 +208,8 @@ clockHours = user_set_hours(userHoursInput, selectedClock)
 userMinutesInput = input("Enter minutes: ")
 clockMinutes = user_set_minutes(userMinutesInput)
 
-newClock = USER_CLOCK(selectedClock, clockHours, clockMinutes)
-newClock.start_time()
-
 # Add space in output
 print()
 
+newClock = USER_CLOCK(selectedClock, clockHours, clockMinutes)
+newClock.start_time()
