@@ -9,174 +9,208 @@ User sets the hours and minutes
 Clock is displayed and acts... like a clock
 '''
 
-# boolean values to increment the time
-incrementMinutes = False
-incrementHours = False
-
-# boolean values to select the clock
-twentyFour = False
-standardClock = False
-
-# boolean values for input checking
-validHours = True
-validMinutes = True
-validClock = True
 
 # max values
 hoursMaxStd = 12
 hoursMaxTf = 23
 minutesMax = 59
 
+
+class USER_CLOCK:
+
+    def __init__(self, clockType, setHours, setMinutes):
+        self.clockType = clockType
+        self.setHours = setHours
+        self.setMinutes = setMinutes
+
+    def start_time(self):
+
+        # boolean values to increment the time
+        incrementMinutes = False
+        incrementHours = False
+
+        # Clock processing
+        while True:
+            for seconds in range(1, 61):
+                if self.clockType:
+                    if incrementHours:
+                        self.setHours = int(self.setHours)
+                        self.setHours += 1
+                        incrementHours = False
+                        if hoursMaxStd < self.setHours:
+                            self.setHours = 1
+                            self.setHours = str(self.setHours)
+                            self.setHours = '0' + self.setHours
+                        elif 10 > self.setHours:
+                            self.setHours = str(self.setHours)
+                            self.setHours = '0' + self.setHours
+                else:
+                    if 0 == self.setHours:
+                        self.setHours = str(self.setHours)
+                        self.setHours = '0' + self.setHours
+                    if incrementHours and 23 != self.setHours:
+                        self.setHours = int(self.setHours)
+                        self.setHours += 1
+                        incrementHours = False
+                        if hoursMaxTf < self.setHours:
+                            self.setHours = 0
+                            self.setHours = str(self.setHours)
+                            self.setHours = '0' + self.setHours
+                        elif 10 > self.setHours:
+                            self.setHours = str(self.setHours)
+                            self.setHours = '0' + self.setHours
+                    elif incrementHours and 23 == self.setHours:
+                        self.setHours = 0
+                        self.setHours = str(self.setHours)
+                        self.setHours = '0' + self.setHours
+                        incrementHours = False
+
+                if incrementMinutes:
+                    self.setMinutes = int(self.setMinutes)
+                    self.setMinutes += 1
+                    incrementMinutes = False
+                    if minutesMax <= self.setMinutes:
+                        self.setMinutes = '00'
+                    elif 10 > self.setMinutes:
+                        self.setMinutes = str(self.setMinutes)
+                        self.setMinutes = '0' + self.setMinutes
+
+                if 60 == seconds:
+                    sys.stdout.write("\r" + str(self.setHours) + ':' + str(self.setMinutes) + ':' + '00')
+                    sys.stdout.flush()
+                    t.sleep(1)
+                elif 10 > seconds:
+                    sys.stdout.write("\r" + str(self.setHours) + ':' + str(self.setMinutes) + ':' + '0' + str(seconds))
+                    sys.stdout.flush()
+                    t.sleep(1)
+                elif 59 > seconds:
+                    sys.stdout.write("\r" + str(self.setHours) + ':' + str(self.setMinutes) + ':' + str(seconds))
+                    sys.stdout.flush()
+                    t.sleep(1)
+                elif 59 == seconds:
+                    sys.stdout.write("\r" + str(self.setHours) + ':' + str(self.setMinutes) + ':' + str(seconds))
+                    sys.stdout.flush()
+                    t.sleep(1)
+                    if 59 == self.setMinutes:
+                        incrementMinutes = True
+                        incrementHours = True
+                    else:
+                        incrementMinutes = True
+
+
+def user_clock(clockChoice):
+    # boolean values to select the clock
+    twentyFour = False
+    standardClock = False
+    validClock = True
+
+    # Keep asking for correct input
+    while validClock:
+
+        # Check if string input is a digit
+        if str.isdigit(clockChoice):
+
+            # Cast the string to an int
+            clockChoice = int(clockChoice)
+
+            # Determine clock choice
+            if 1 == clockChoice:
+                standardClock = True
+                validClock = False
+                return 1
+            elif 2 == clockChoice:
+                twentyFour = True
+                validClock = False
+                return 2
+            else:
+                clockChoice = input("Choose a valid choice (1 or 2): ")
+
+
+def user_set_hours(setHours, selectedClock):
+    # boolean values for input checking
+    validHours = True
+
+    # Same concept as above: keep asking until valid input
+    while validHours:
+
+        if str.isdigit(setHours):
+            setHours = int(setHours)
+
+            if 1 == selectedClock:
+                if -1 >= setHours or hoursMaxStd < setHours:
+                    setHours = input("Input valid hours (1-12): ")
+
+                elif 10 > setHours:
+                    # Cast minutes back to a string and add a zero to the front
+                    setHours = str(setHours)
+                    setHours = '0' + setHours
+                    validHours = False
+                else:
+                    setHours = str(setHours)
+                    validHours = False
+
+            elif 2 == selectedClock:
+                if -1 >= setHours or hoursMaxTf < setHours:
+                    setHours = input("Input valid hours (1-23): ")
+
+                    if str.isdigit(setHours):
+                        setHours = int(setHours)
+
+                elif 10 > setHours:
+                    # Cast minutes back to a string and add a zero to the front
+                    setHours = str(setHours)
+                    setHours = '0' + setHours
+                    validHours = False
+
+            else:
+                setHours = input("Input valid hours (1-12): ")
+        else:
+            setHours = input("Input valid hours (1-12): ")
+    return setHours
+
+
+def user_set_minutes(setMinutes):
+    # boolean values for input checking
+    validMinutes = True
+
+    # Same concept as above: keep asking until valid input
+    while validMinutes:
+
+        if str.isdigit(setMinutes):
+            setMinutes = int(setMinutes)
+
+            if -1 >= setMinutes or 59 < setMinutes:
+                setMinutes = input("Input valid minutes (0-59): ")
+
+            elif 10 > setMinutes:
+                setMinutes = str(setMinutes)
+                setMinutes = '0' + setMinutes
+                validMinutes = False
+
+            else:
+                validMinutes = False
+
+        else:
+            setMinutes = input("Input valid minutes (0-59): ")
+
+    return setMinutes
+
+
 # CLOCK CHOICE
-clockChoice = input("Choose a clock \n1) Standard 2) 24 Hour: ")
-
-# Keep asking for correct input
-while validClock:
-
-    # Check if string input is a digit
-    if str.isdigit(clockChoice):
-
-        # Cast the string to an int
-        clockChoice = int(clockChoice)
-
-        # Determine clock choice
-        if 1 == clockChoice:
-            standardClock = True
-            validClock = False
-        elif 2 == clockChoice:
-            twentyFour = True
-            validClock = False
-    else:
-        clockChoice = input("Choose a valid choice (1 or 2): ")
+userClockInput = input("Choose a clock \n1) Standard 2) 24 Hour: ")
+selectedClock = user_clock(userClockInput)
 
 # SET HOURS
-hours = input("Enter hours: ")
-
-# Same concept as above: keep asking until valid input
-while validHours:
-
-    if str.isdigit(hours):
-        hours = int(hours)
-
-        if standardClock:
-            if -1 >= hours or hoursMaxStd < hours:
-                hours = input("Input valid hours (1-12): ")
-
-            elif 10 > hours:
-                # Cast minutes back to a string and add a zero to the front
-                hours = str(hours)
-                hours = '0' + hours
-                validHours = False
-
-        else:
-            if -1 >= hours or hoursMaxTf < hours:
-                hours = input("Input valid hours (1-23): ")
-
-                if str.isdigit(hours):
-                    hours = int(hours)
-
-            elif 10 > hours:
-                # Cast minutes back to a string and add a zero to the front
-                hours = str(hours)
-                hours = '0' + hours
-                validHours = False
-
-    else:
-        hours = input("Input valid hours (1-12): ")
+userHoursInput = input("Enter hours: ")
+clockHours = user_set_hours(userHoursInput, selectedClock)
 
 # SET MINUTES
-minutes = input("Enter minutes: ")
+userMinutesInput = input("Enter minutes: ")
+clockMinutes = user_set_minutes(userMinutesInput)
 
-# Same concept as above: keep asking until valid input
-while validMinutes:
-
-    if str.isdigit(minutes):
-        minutes = int(minutes)
-
-        if -1 >= minutes or 59 < minutes:
-            minutes = input("Input valid minutes (0-59): ")
-
-        elif 10 > minutes:
-            minutes = str(minutes)
-            minutes = '0' + minutes
-            validMinutes = False
-
-        else:
-            validMinutes = False
-
-    else:
-        minutes = input("Input valid minutes (0-59): ")
+newClock = USER_CLOCK(selectedClock, clockHours, clockMinutes)
+newClock.start_time()
 
 # Add space in output
 print()
 
-# Clock processing
-while True:
-    for seconds in range(1, 61):
-        if standardClock:
-            if incrementHours:
-                hours = int(hours)
-                hours += 1
-                incrementHours = False
-                if hoursMaxStd < hours:
-                    hours = 1
-                    hours = str(hours)
-                    hours = '0' + hours
-                elif 10 > hours:
-                    hours = str(hours)
-                    hours = '0' + hours
-        else:
-            if 0 == hours:
-                hours = str(hours)
-                hours = '0' + hours
-            if incrementHours and 23 != hours:
-                hours = int(hours)
-                hours += 1
-                incrementHours = False
-                if hoursMaxTf < hours:
-                    hours = 0
-                    hours = str(hours)
-                    hours = '0' + hours
-                elif 10 > hours:
-                    hours = str(hours)
-                    hours = '0' + hours
-            elif incrementHours and 23 == hours:
-                hours = 0
-                hours = str(hours)
-                hours = '0' + hours
-                incrementHours = False
-
-        if incrementMinutes:
-            minutes = int(minutes)
-            minutes += 1
-            incrementMinutes = False
-            if minutesMax <= minutes:
-                minutes = '00'
-            elif 10 > minutes:
-                minutes = str(minutes)
-                minutes = '0' + minutes
-
-        if 60 == seconds:
-            sys.stdout.write("\r" + str(hours) + ':' + str(minutes) + ':' + '00')
-            sys.stdout.flush()
-            t.sleep(1)
-        elif 10 > seconds:
-            sys.stdout.write("\r" + str(hours) + ':' + str(minutes) + ':' + '0' + str(seconds))
-            sys.stdout.flush()
-            t.sleep(1)
-        elif 59 > seconds:
-            sys.stdout.write("\r" + str(hours) + ':' + str(minutes) + ':' + str(seconds))
-            sys.stdout.flush()
-            t.sleep(1)
-        elif 59 == seconds:
-            if 59 == minutes:
-                sys.stdout.write("\r" + str(hours) + ':' + str(minutes) + ':' + str(seconds))
-                sys.stdout.flush()
-                t.sleep(1)
-                incrementMinutes = True
-                incrementHours = True
-            else:
-                sys.stdout.write("\r" + str(hours) + ':' + str(minutes) + ':' + str(seconds))
-                sys.stdout.flush()
-                t.sleep(1)
-                incrementMinutes = True
